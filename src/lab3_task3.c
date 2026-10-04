@@ -52,7 +52,7 @@ int my_strlen(const char* str) {
   while (str[len] != '\0') {
     len++;
   }
-  return len;  // placeholder
+  return len; 
 }
 
 void my_strcpy(char* dest, const char* src) {
