@@ -36,8 +36,9 @@ int main(void) {
     int running = 1;
 
     // TODO: Load existing data: count = load_students(students, MAX_STUDENTS);
+    count = load_students(students, MAX_STUDENTS);
+
     printf("Loaded %d student(s) from %s\n", count, DATA_FILE);
-       count = load_students(students, MAX_STUDENTS);
     while (running) {
         printf("\n=== Student Management System ===\n");
         printf("1. List students\n");
