@@ -1,5 +1,5 @@
 // week5_task4_struct_binary_io.c   (BONUS)
-// Name: ________  Surname: ________  Student ID: ________
+// Name: Aygul  Surname: Ismayilova  Student ID: 251ADB153
 //
 // Task 4: Save and load a struct in binary format with fwrite()/fread()
 // Week 5 – Files & Modular Programming
@@ -35,34 +35,81 @@ int main(void) {
 
     printf("Saving student in binary format...\n");
     // TODO: save_student_binary(&s1, bin_file); handle failure
+        if (save_student_binary(&s1, bin_file) != 0) {
+        fprintf(stderr, "Error: could not save student to %s\n", bin_file);
+        return EXIT_FAILURE;
+    }
 
     // TODO: Save the same record as text ("name age gpa") to txt_file for comparison
-
+    FILE *txt = fopen(txt_file, "w");
+    if (txt == NULL) {
+        perror(txt_file);
+        return EXIT_FAILURE;
+    }
+    fprintf(txt, "%s %d %.2f\n", s1.name, s1.age, s1.gpa);
+    fclose(txt);
     printf("Loading student from binary file...\n");
     // TODO: load_student_binary(bin_file, &loaded); handle failure
+        if (load_student_binary(bin_file, &loaded) != 0) {
+        fprintf(stderr, "Error: could not load student from %s\n", bin_file);
+        return EXIT_FAILURE;
+    }
 
     // TODO: printf("Loaded student: %s, %d, GPA %.2f\n", ...);
     // TODO: printf("Text file size: %ld bytes\n", file_size(txt_file));
     // TODO: printf("Binary file size: %ld bytes\n", file_size(bin_file));
-
+    printf("Loaded student: %s, %d, GPA %.2f\n", loaded.name, loaded.age, loaded.gpa);
+    printf("Text file size: %ld bytes\n", file_size(txt_file));
+    printf("Binary file size: %ld bytes\n", file_size(bin_file));
     (void)loaded; (void)bin_file; (void)txt_file;  // remove once used
     return EXIT_SUCCESS;
 }
 
 // TODO: open with "wb", fwrite(s, sizeof(Student), 1, fp) must return 1, close, return 0/-1
 int save_student_binary(const Student *s, const char *filename) {
-    (void)s; (void)filename;
-    return -1;
+        FILE *fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        perror(filename);
+        return -1;
+    }
+
+    size_t written = fwrite(s, sizeof(Student), 1, fp);
+
+    if (fclose(fp) != 0 || written != 1) {
+        return -1;
+    }
+    return 0;
 }
 
 // TODO: open with "rb", fread(out, sizeof(Student), 1, fp) must return 1, close, return 0/-1
 int load_student_binary(const char *filename, Student *out) {
-    (void)filename; (void)out;
-    return -1;
+       FILE *fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        perror(filename);
+        return -1;
+    }
+
+    size_t read_count = fread(out, sizeof(Student), 1, fp);
+    fclose(fp);
+
+    if (read_count != 1) {
+        return -1;
+    }
+    return 0;
 }
 
 // TODO: open with "rb", fseek(fp, 0, SEEK_END), size = ftell(fp), close, return size (-1 on error)
 long file_size(const char *filename) {
-    (void)filename;
-    return -1;
+        FILE *fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        perror(filename);
+        return -1;
+    }
+
+    long size = -1;
+    if (fseek(fp, 0, SEEK_END) == 0) {
+        size = ftell(fp);
+    }
+    fclose(fp);
+    return size;
 }
